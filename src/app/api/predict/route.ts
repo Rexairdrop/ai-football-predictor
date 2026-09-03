@@ -20,8 +20,9 @@ export async function GET(request: Request) {
       apiKey: process.env.GEMINI_API_KEY || '',
     });
 
-    const { text } = await generateText({
-      model: google('gemini-1.5-flash-latest'), // Fixed model string for 100% cloud compatibility
+    // CHANGED: Swapped { text } for { json } to match experimental_output structured mode
+    const { json } = await generateText({
+      model: google('gemini-1.5-flash'), 
       abortSignal: AbortSignal.timeout(15000),
       prompt: `
         Act as an elite algorithmic sports handicapper specializing EXCLUSIVELY in the "Over 1.5 Goals" betting market.
@@ -36,10 +37,11 @@ export async function GET(request: Request) {
           {"match": "Dortmund vs Bayern Munich", "league": "Bundesliga", "market": "Over 1.5 Goals", "confidence": "96%", "status": "Premium Pick"}
         ]
       `,
+      experimental_output: 'json_object', // FIXED: Placed inside parameters block correctly
     });
 
-    // Strip any random markdown text blocks clean
-    const cleanJsonString = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    // CHANGED: Directly stringify the pre-parsed JSON returned by the SDK
+    const cleanJsonString = JSON.stringify(json);
     return NextResponse.json({ success: true, dailyPredictions: cleanJsonString });
 
   } catch (error: any) {
