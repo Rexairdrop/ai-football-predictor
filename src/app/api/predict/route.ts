@@ -15,10 +15,9 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Initialize OpenAI with explicit parameters
+    // Initialize OpenAI without the compatibility parameter to pass TypeScript compilation checks
     const customOpenAI = createOpenAI({
       apiKey: process.env.OPENAI_API_KEY || '',
-      compatibility: 'strict',
     });
 
     const { text } = await generateText({
