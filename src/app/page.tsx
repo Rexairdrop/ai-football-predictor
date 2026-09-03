@@ -2,41 +2,37 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
+import DailyPredictionsList from '@/components/PredictionsList';
 
-interface MatchPrediction {
+interface Fixture {
   match: string;
   league: string;
-  market: string;
-  confidence: string;
-  status: string;
+  over15: string;
+  gg: string;
+  over25: string;
+}
+
+interface MatchGroup {
+  dateHeading: string;
+  fixtures: Fixture[];
 }
 
 export default function HomePage() {
-  const [predictions, setPredictions] = useState<MatchPrediction[]>([]);
+  const [matchGroups, setMatchGroups] = useState<MatchGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     async function fetchLivePredictions() {
       try {
-        // Fetch directly from your live Football-Data.org AI API engine route
         const response = await fetch('/api/predict');
         const data = await response.json();
         
         if (data.success && data.dailyPredictions) {
-          // If the AI returns a string, try to parse it, otherwise adapt structured records
-          let parsedData = [];
-          try {
-            parsedData = JSON.parse(data.dailyPredictions);
-          } catch {
-            // Backup handling if OpenAI returns formatted raw texts instead of strict JSON arrays
-            parsedData = [
-              { match: "Live Fixtures Processed", league: "Global", market: data.dailyPredictions, confidence: "90%", status: "AI Pick" }
-            ];
-          }
-          setPredictions(parsedData);
-        } else if (data.message) {
-          setError(data.message); // Handles "No football matches scheduled for today"
+          // No manual JSON string parsing needed anymore since the backend handles it natively
+          setMatchGroups(data.dailyPredictions);
+        } else if (data.error) {
+          setError(data.error);
         } else {
           setError('Failed to gather today\'s operational data matrix analytics feeds.');
         }
@@ -64,7 +60,7 @@ export default function HomePage() {
       </header>
 
       {/* Main Content Layout */}
-      <main className="max-w-5xl mx-auto px-6 py-12">
+      <main className="max-w-6xl mx-auto px-6 py-12">
         <div className="text-center max-w-2xl mx-auto mb-16">
           <div className="inline-flex items-center space-x-2 bg-emerald-500/10 text-emerald-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-emerald-500/20">
             <span>✨</span> <span>Algorithmic Betting Intelligence Active</span>
@@ -72,10 +68,6 @@ export default function HomePage() {
           <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight leading-none">Daily Premium Football Matches Analysis</h1>
           <p className="text-slate-400 text-base md:text-lg">Data-driven football predictions compiled automatically using historic scoring trends and deep team analytics models.</p>
         </div>
-
-        <h2 className="text-xl font-extrabold mb-6 flex items-center space-x-2 text-slate-300">
-          <span>🔥</span> <span>Today's Verified Predictions Feed</span>
-        </h2>
 
         {/* Loading State UI */}
         {loading && (
@@ -92,26 +84,17 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Live Active Prediction Cards Grid Layout */}
+        {/* Structural Date Groups & Market Columns List Layout */}
         {!loading && !error && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            {predictions.map((pred, i) => (
-              <div key={i} className="bg-slate-900 rounded-2xl p-6 border border-slate-800 hover:border-emerald-500/30 transition-all duration-300 shadow-xl group">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{pred.league || "Leagues"}</span>
-                  <span className="text-xs bg-emerald-500/10 text-emerald-400 font-extrabold px-2.5 py-1 rounded-md border border-emerald-500/10">{pred.status || "Premium"}</span>
-                </div>
-                <h3 className="text-lg font-bold text-white group-hover:text-emerald-400 transition mb-6">{pred.match}</h3>
-                <div className="bg-slate-950 rounded-xl p-4 border border-slate-800/50">
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Target Market Selection</span>
-                  <div className="text-sm font-mono text-slate-200 font-bold mb-3">{pred.market}</div>
-                  <div className="flex items-center justify-between border-t border-slate-900 pt-2 text-xs">
-                    <span className="text-slate-500 font-medium">Model Confidence Metric</span>
-                    <span className="font-mono font-black text-emerald-400 text-sm">{pred.confidence || "90%"}</span>
-                  </div>
-                </div>
+          <div className="mb-12">
+            {matchGroups.length > 0 ? (
+              <DailyPredictionsList matchGroups={matchGroups} />
+            ) : (
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center text-slate-400">
+                <span className="text-2xl block mb-2">📋</span>
+                No upcoming major football matches match your prediction profile for today.
               </div>
-            ))}
+            )}
           </div>
         )}
       </main>
