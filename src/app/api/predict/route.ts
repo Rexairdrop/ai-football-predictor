@@ -1,9 +1,9 @@
 export const dynamic = 'force-dynamic';
 
 import { NextResponse } from 'next/server';
-import { generateObject } from 'ai'; // CHANGED: Using the reliable generateObject function
+import { generateObject } from 'ai'; 
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { z } from 'zod'; // Standard schema validation library included with AI SDK
+import { z } from 'zod'; 
 
 export async function GET(request: Request) {
   // Allow internal frontend site checking bypass
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
 
     // We explicitly define the exact data shape we expect from Gemini
     const { object } = await generateObject({
-      model: google('gemini-1.5-flash'), 
+      model: google('gemini-2.5-flash'), // UPDATED: Upgraded to current stable version
       abortSignal: AbortSignal.timeout(15000),
       // Schema ensures type safety and forces the model to structure the array correctly
       schema: z.object({
