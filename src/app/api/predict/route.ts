@@ -1,23 +1,16 @@
-import { NextResponse } from 'next/server';
-import { generateText } from 'ai';
-import { openai } from '@ai-sdk/openai';
+const { text } = await generateText({
+  model: openai('gpt-4o'),
+  prompt: `
+    Act as a professional algorithmic sports handicapper. Analyze these daily fixtures: ${matchContext}.
+    Generate premium daily picks ONLY across these precise betting categories:
+    
+    1. Premium Over 1.5 Goals: (CRITICAL: Be extremely strict. Select matches ONLY where both teams average a combined >2.5 goals in their last 5 fixtures, and H2H shows a 90%+ history of at least 2 goals).
+    2. Over 2.5 Goals / Away Win.
+    3. GG (Both Teams to Score).
+    4. GG2+ (Both Teams to Score 2 or More Goals Each).
+    5. Home/Away Win (Both Teams to Score but NOT a draw).
+    6. Straight Wins (1 or 2).
 
-export async function GET(request: Request) {
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new NextResponse('Unauthorized Security Check Failed', { status: 401 });
-  }
-
-  try {
-    const matchContext = "Match: Real Madrid vs Barcelona. Venue: Bernabéu. Form: Madrid won last 4 games, Barcelona missing top striker due to injury.";
-
-    const { text } = await generateText({
-      model: openai('gpt-4o'),
-      prompt: `Act as an expert football statistician. Analyze this match dataset and provide an outcome prediction, estimated final score, and a confidence percentage: ${matchContext}`,
-    });
-
-    return NextResponse.json({ success: true, dailyPredictions: text });
-  } catch (error) {
-    return NextResponse.json({ success: false, error: String(error) }, { status: 500 });
-  }
-}
+    Format the output cleanly as a structured JSON array containing match names, selected market types, and a calculated confidence metrics score. Do not provide commentary.
+  `,
+});
