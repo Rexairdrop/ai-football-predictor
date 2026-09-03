@@ -21,11 +21,12 @@ export async function GET(request: Request) {
 
     const { object } = await generateObject({
       model: google('gemini-3.6-flash'), 
-      abortSignal: AbortSignal.timeout(25000), 
+      // FIXED: Increased timeout window to 60 seconds to ensure the full list compiles smoothly
+      abortSignal: AbortSignal.timeout(60000), 
       schema: z.object({
         matchGroups: z.array(
           z.object({
-            dateHeading: z.string(), // e.g., "Friday, September 4, 2026"
+            dateHeading: z.string(), 
             fixtures: z.array(
               z.object({
                 match: z.string(),
@@ -40,14 +41,14 @@ export async function GET(request: Request) {
       }),
       prompt: `
         Act as an elite algorithmic sports handicapper. 
-        Analyze the full calendar of major football matches scheduled for today (Thursday, September 3, 2026) and tomorrow (Friday, September 4, 2026).
+        Analyze the calendar of top-tier football matches scheduled for today (Thursday, September 3, 2026) and tomorrow (Friday, September 4, 2026).
         
-        Group the fixtures clearly by their calendar date. For every single match inside a date group, calculate the historical probability metric or prediction outcome for these exact three market fields:
+        Group the fixtures clearly by their calendar date. Keep the selection punchy and highly relevant (around 5-8 matches total across top leagues like Nations League, Premier League, etc.) to ensure rapid execution. 
+        
+        For every match inside a date group, calculate the historical probability metric or prediction outcome for these exact three market fields:
         1. over15: Left Side market tracking Over 1.5 Goals (e.g. "92%")
         2. gg: Center market tracking Goal-Goal / Both Teams to Score (e.g. "GG (85%)" or "NG (40%)")
         3. over25: Right Side market tracking Over 2.5 Goals (e.g. "74%")
-        
-        Ensure you include elite top-tier leagues (Premier League, La Liga, Serie A, Bundesliga, Champions League, etc.).
       `,
     });
 
