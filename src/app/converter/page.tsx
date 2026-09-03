@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { marketDictionary, BettingMarket, Platform } from '../utils/codeConverter';
+import { marketDictionary, BettingMarket, Platform } from '../../utils/codeConverter';
 
 export default function ConverterPage() {
   const [sourcePlatform, setSourcePlatform] = useState<Platform>('bet9ja');
