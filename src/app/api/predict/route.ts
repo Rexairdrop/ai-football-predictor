@@ -15,13 +15,12 @@ export async function GET(request: Request) {
   }
 
   try {
-    // Initialize OpenAI with specialized timeout configurations
+    // Initialize OpenAI with explicit parameters
     const customOpenAI = createOpenAI({
       apiKey: process.env.OPENAI_API_KEY || '',
       compatibility: 'strict',
     });
 
-    // Explicitly command the AI to act as an Over 1.5 Goals filter system
     const { text } = await generateText({
       model: customOpenAI('gpt-4o'),
       abortSignal: AbortSignal.timeout(15000),
@@ -40,12 +39,10 @@ export async function GET(request: Request) {
       `,
     });
 
-    // Strip any markdown code block wrap tags cleanly to prevent JSON parsing crashes
     const cleanJsonString = text.replace(/```json/g, '').replace(/```/g, '').trim();
     return NextResponse.json({ success: true, dailyPredictions: cleanJsonString });
 
   } catch (error: any) {
-    // Graceful user panel fallback if OpenAI API platform balance runs out of credits
     return NextResponse.json({ 
       success: true, 
       dailyPredictions: JSON.stringify([
