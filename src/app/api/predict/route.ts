@@ -3,9 +3,12 @@ import { generateText } from 'ai';
 import { openai } from '@ai-sdk/openai';
 
 export async function GET(request: Request) {
-  // 1. Enforce strict cron security signature validation
+   // 1. Allow internal website frontend checks or enforce strict cron parameters
   const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const url = new URL(request.url);
+  const isInternal = url.hostname === 'localhost' || url.hostname.endsWith('.vercel.app');
+
+  if (!isInternal && authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new NextResponse('Unauthorized Security Check Failed', { status: 401 });
   }
 
