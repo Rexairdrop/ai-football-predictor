@@ -23,7 +23,7 @@ export async function GET(request: Request) {
 
     // We explicitly define the exact data shape we expect from Gemini
     const { object } = await generateObject({
-      model: google('gemini-2.5-flash'), // UPDATED: Upgraded to current stable version
+      model: google('gemini-3.6-flash'), // UPDATED: Upgraded to current supported model
       abortSignal: AbortSignal.timeout(15000),
       // Schema ensures type safety and forces the model to structure the array correctly
       schema: z.object({
