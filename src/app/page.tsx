@@ -21,7 +21,7 @@ export default function HomePage() {
         </div>
         <nav className="flex items-center space-x-6">
           <Link href="/" className="text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition">Premium Picks</Link>
-          <Link href="/converter" className="text-sm font-semibold text-slate-300 hover:text-white transition px-4 py-2 bg-slate-800 rounded-xl border border-slate-700">Slip Converter ⚡</Link>
+      
         </nav>
       </header>
 
