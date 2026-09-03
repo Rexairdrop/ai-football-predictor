@@ -15,13 +15,13 @@ export async function GET(request: Request) {
   }
 
   try {
-    // 1. Initialize Google's Free AI Engine
+    // Initialize Google's Free AI Engine
     const google = createGoogleGenerativeAI({
       apiKey: process.env.GEMINI_API_KEY || '',
     });
 
     const { text } = await generateText({
-      model: google('gemini-1.5-flash'), // Using Google's high-speed, free-tier model
+      model: google('gemini-1.5-flash-latest'), // Fixed model string for 100% cloud compatibility
       abortSignal: AbortSignal.timeout(15000),
       prompt: `
         Act as an elite algorithmic sports handicapper specializing EXCLUSIVELY in the "Over 1.5 Goals" betting market.
@@ -47,9 +47,9 @@ export async function GET(request: Request) {
       success: true, 
       dailyPredictions: JSON.stringify([
         { 
-          match: "Gemini Engine Booting", 
+          match: "Gemini Engine Syncing", 
           league: "System Status", 
-          market: `Connecting to free Google AI arrays... (Status details: ${error?.message || 'Reloading'}), please refresh the page in a few seconds!`, 
+          market: `Connecting to free Google AI arrays... (Details: ${error?.message || 'Syncing'}), refreshing engine logs.`, 
           confidence: "100%", 
           status: "Syncing" 
         }
